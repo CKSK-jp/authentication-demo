@@ -1,7 +1,8 @@
-from flask import Flask, flash, redirect, render_template, session
-from forms import LoginForm, RegisterForm
+from flask import Flask, flash, redirect, render_template, request, session, url_for
+from psycopg2 import IntegrityError
 
-from models import User, connect_db, db
+from forms import LoginForm, RegisterForm
+from models import AuthUser, connect_db, db
 
 app = Flask(__name__)
 
@@ -22,22 +23,78 @@ def home():
     return render_template("home.html", title="Home")
 
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-
     form = RegisterForm()
 
-    if form.validate_on_submit():
-        print("This is the register page")
+    if request.method == "GET":
         return render_template("register.html", title="Register", form=form)
-    print("This is the register page")
-    return render_template("register.html", title="Register")
+
+    if form.validate_on_submit():
+        username = form.username.data
+        # email = form.email.data
+        password = form.password.data
+
+        try:
+            if AuthUser.query.filter_by(username=username).first():
+                flash("Username already exists", category="error")
+            else:
+                user = AuthUser.register(username, password)
+                db.session.add(user)
+                db.session.commit()
+                flash("Account created, please log in", category="success")
+                return redirect(url_for("login"))
+        except IntegrityError:
+            db.session.rollback()
+            flash(
+                "There was an error creating your account, please try again",
+                category="error",
+            )
+
+    return render_template("register.html", title="Register", form=form)
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    print("This is the login page")
-    return render_template("login.html", title="Login")
+    form = LoginForm()
+    if request.method == "GET":
+        return render_template("login.html", title="Login", form=form)
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+
+        user = AuthUser.authenticate(username, password)
+
+        if user:
+            session["user_id"] = user.id
+            print("succesfully logged in!")
+            return redirect(url_for("welcome", username=username))
+
+    flash("Invalid credentials", category="error")
+    return render_template("login.html", title="Login", form=form)
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id")
+    return redirect(url_for("home"))
+
+
+@app.route("/user/<username>", methods=["GET"])
+def welcome(username):
+    if "user_id" not in session:
+        flash("You must be logged in to view this page", category="error")
+        return redirect(url_for("login"))
+
+    user = AuthUser.query.get(session["user_id"])
+
+    if user.username != username:
+        flash("You cannot access this page", category="error")
+        return redirect(url_for("login"))
+
+    print("This is the welcome page")
+    return render_template("welcome.html", title="Welcome", user=user)
 
 
 if __name__ == "__main__":

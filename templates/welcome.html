@@ -1,0 +1,16 @@
+{% extends 'base.html' %} 
+
+{% block title %}Welcome {{ user.username}}{% endblock %}
+
+{% block header %}
+<div class="links">
+  <a href="/logout">logout</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Welcome {{ user.username}}</h1>
+<p>This is the welcome page!</p>
+
+<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita soluta debitis aliquam blanditiis, asperiores placeat obcaecati consectetur explicabo quas quo totam alias similique molestiae dicta id amet eius molestias reprehenderit!</p>
+{% endblock %}

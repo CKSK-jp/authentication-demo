@@ -35,3 +35,20 @@
    text-decoration: none;
    color: #000;
  }
+
+ .flash-message {
+   margin: 10px 0;
+   padding: 5px;
+   border-radius: 5px;
+   color: white;
+ }
+
+ .flash-message.success {
+   background-color: #28a745;
+   border: 1px solid #218838;
+ }
+
+ .flash-message.error {
+   background-color: #dc3545;
+   border: 1px solid #c82333;
+ }
