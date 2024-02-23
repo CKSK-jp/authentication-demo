@@ -4,6 +4,7 @@
 
 {% block header %}
 <div class="links">
+  <a href="/users/{{ user.username }}/account">Account Settings</a>
   <a href="/logout">logout</a>
 </div>
 {% endblock %}
@@ -24,7 +25,7 @@
 
 <div id="feedback-container">
   {% for feedback in feedback_list %}
-  <a class="feedback" href="/feedback/{{ feedback.id }}/update">
+  <a class="feedback" href="/feedback/{{ feedback.id }}">
     <h3>{{ feedback.title }}</h3>
     <p>{{ feedback.content }}</p>
   </a>

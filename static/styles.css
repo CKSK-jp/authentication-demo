@@ -71,6 +71,14 @@ a:hover {
   text-decoration: none;
 }
 
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 5px;
+}
+
 .flash-message {
   margin: 10px 0;
   padding: 5px;

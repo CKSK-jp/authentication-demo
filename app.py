@@ -20,7 +20,10 @@ with app.app_context():
 @app.route("/")
 def home():
     if "user_id" in session:
-        return redirect(url_for("welcome", username=session["user_id"]))
+        user = AuthUser.query.filter_by(id=session["user_id"]).first()
+        if user:
+            username = user.username
+            return redirect(url_for("welcome", username=username))
     return render_template("home.html", title="Home")
 
 
@@ -103,17 +106,33 @@ def welcome(username):
         flash("You must be logged in to view this page", category="error")
         return redirect(url_for("login"))
 
-    user = AuthUser.query.get(session["user_id"])
-
-    # if user.username != username:
-    #     flash("You cannot access this page", category="error")
-    #     return redirect(url_for("login"))
+    user = AuthUser.query.filter_by(username=username).first_or_404()
 
     feedback_list = Feedback.query.all()
 
     return render_template(
         "welcome.html", title="Welcome", user=user, feedback_list=feedback_list
     )
+
+
+@app.route("/users/<username>/account", methods=["GET"])
+def show_account(username):
+    """
+    A function to handle the account page for a specific user.
+
+    Args:
+        username (str): The username of the user to show the account for.
+
+    Returns:
+        render_template: The rendered account page.
+    """
+    if "user_id" not in session:
+        flash("You must be logged in to view this page", category="error")
+        return redirect(url_for("login"))
+
+    user = AuthUser.query.filter_by(username=username).first_or_404()
+
+    return render_template("account.html", title="Account Details", user=user)
 
 
 @app.route("/users/<username>/delete", methods=["POST"])
@@ -134,7 +153,7 @@ def delete_user(username):
         flash("You cannot access this page", category="error")
         return redirect(url_for("login"))
 
-    user = AuthUser.query.filter_by(username=username)
+    user = AuthUser.query.filter_by(username=username).first()
 
     if user:
         for feedback in user.feedback:
@@ -142,8 +161,9 @@ def delete_user(username):
 
         db.session.delete(user)
         db.session.commit()
+        session.pop("user_id")
         flash("Account deleted", category="success")
-    return redirect(url_for("home"))
+    return render_template("home.html", title="Home")
 
 
 @app.route("/users/<username>/feedback/add", methods=["GET", "POST"])
@@ -192,6 +212,33 @@ def add_feedback(username):
         )
 
 
+@app.route("/feedback/<int:feedback_id>", methods=["GET"])
+def show_feedback(feedback_id):
+    """
+    Show a specific feedback entry for a specific user.
+
+    :param feedback_id: the ID of the feedback entry to show
+    :return: a redirect to the welcome page
+    """
+    if "user_id" not in session:
+        flash("You must be logged in to view this page", category="error")
+        return redirect(url_for("login"))
+
+    feedback = Feedback.query.get(feedback_id)
+    user = AuthUser.query.get(session["user_id"])
+
+    if not feedback:
+        flash("Feedback not found", category="error")
+        return redirect(url_for("welcome"), username=user.username)
+
+    if user.username != feedback.username:
+        return render_template("feedback.html", title="Feedback", feedback=feedback)
+    else:
+        return render_template(
+            "feedback.html", title="Feedback", feedback=feedback, user=user
+        )
+
+
 @app.route("/feedback/<int:feedback_id>/update", methods=["GET", "POST"])
 def edit_feedback(feedback_id):
     """
@@ -205,12 +252,11 @@ def edit_feedback(feedback_id):
         return redirect(url_for("login"))
 
     feedback = Feedback.query.get(feedback_id)
+    user = AuthUser.query.get(session["user_id"])
 
     if not feedback:
         flash("Feedback not found", category="error")
-        return redirect(url_for("welcome"))
-
-    user = AuthUser.query.get(session["user_id"])
+        return redirect(url_for("welcome"), username=user.username)
 
     if user.username != feedback.username:
         flash("You cannot access this page", category="error")
@@ -226,20 +272,56 @@ def edit_feedback(feedback_id):
 
             feedback_list = Feedback.query.all()
 
-        flash("Feedback updated", category="success")
-        return render_template(
-            "welcome.html",
-            title="Edit Feedback",
-            user=user,
-            form=form,
-            feedback_list=feedback_list,
-        )
+            flash("Feedback updated", category="success")
+            return render_template(
+                "welcome.html",
+                title="Edit Feedback",
+                user=user,
+                form=form,
+                feedback_list=feedback_list,
+            )
+        else:
+            flash("Feedback not updated", category="error")
+            return render_template(
+                "feedback_form.html", title="Edit Feedback", user=user, form=form
+            )
+
     else:
         form = FeedbackForm(obj=feedback)
-        flash("Error: Feedback not updated", category="error")
         return render_template(
             "feedback_form.html", title="Edit Feedback", user=user, form=form
         )
+
+
+@app.route("/feedback/<int:feedback_id>/delete", methods=["POST"])
+def delete_feedback(feedback_id):
+    """
+    Delete a feedback entry for a specific user.
+
+    :param feedback_id: the ID of the feedback entry to delete
+    :return: a redirect to the welcome page
+    """
+    if "user_id" not in session:
+        flash("You must be logged in to view this page", category="error")
+        return redirect(url_for("login"))
+
+    feedback = Feedback.query.get(feedback_id)
+    user = AuthUser.query.get(session["user_id"])
+
+    if not feedback:
+        flash("Feedback not found", category="error")
+        return redirect(url_for("welcome", username=user.username))
+
+    if user.username != feedback.username:
+        flash("You cannot access this page", category="error")
+        return redirect(url_for("login"))
+
+    db.session.delete(feedback)
+    db.session.commit()
+
+    print("loading welcome page, feedback deleted", user.username)
+    flash("Feedback deleted", category="success")
+    return redirect(url_for("welcome", username=user.username))
 
 
 if __name__ == "__main__":

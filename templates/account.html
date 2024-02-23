@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+<div class="links">
+  <a href="/users/{{ user.username }}/settings">Account Settings</a>
+  <a href="/logout">Logout</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <h1>{{ title }}</h1>
+  <p>This is the account page!</p>
+
+  <form for="update-account" action="/users/{{ user.username }}/delete" method="POST">
+    <button type="submit" class="btn btn-secondary">Delete Account</button>
+</div>
+{% endblock %}

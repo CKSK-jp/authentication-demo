@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Feedback{% endblock %}
+{% block title %}{% endblock %}
 
 {% block header %}
 <div class="links">
@@ -9,13 +9,25 @@
 {% endblock %}
 
 {% block content %}
-<h1>Feedback</h1>
 
-{% for feedback in feedbacks %}
-<div class="feedback">
-  <h3>{{ feedback.title }}</h3>
-  <p>{{ feedback.content }}</p>
+<div class="main">
+  <div class="feedback">
+    <h3>{{ feedback.title }}</h3>
+    <p>{{ feedback.content }}</p>
+  </div>
+
+  <div class="actions">
+    {% if user %}
+    <form for="edit-feedback" action="/feedback/{{ feedback.id }}/update">
+      <button type="submit" class="btn btn-secondary">Edit</button>
+    </form>
+
+    <form for="delete-feedback" action="/feedback/{{ feedback.id }}/delete" method="POST">
+      <button type="submit" class="btn btn-tertiary">Delete</button>
+    </form>
+  </div>
 </div>
-{% endfor %}
-<button class="btn btn-secondary">Edit</button>
+
+{% endif %}
+
 {% endblock %}
