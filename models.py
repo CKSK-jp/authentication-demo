@@ -33,3 +33,18 @@ class AuthUser(db.Model):
             return user
         else:
             return False
+
+
+class Feedback(db.Model):
+
+    __tablename__ = "feedback"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    user = db.relationship(
+        "AuthUser", backref=db.backref("feedback", cascade="all, delete")
+    )
+    username = db.Column(
+        db.String(100), db.ForeignKey("auth_users.username"), nullable=False
+    )

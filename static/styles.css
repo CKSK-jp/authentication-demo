@@ -1,54 +1,89 @@
- .header-styles {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   padding: 10px 20px;
-   background-color: #beb9b9;
- }
+.header-styles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #beb9b9;
+}
 
- .content {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding: 20px;
- }
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 20px;
+  height: auto;
+}
 
- a:hover {
-   color: inherit !important;
-   text-decoration: none !important;
- }
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
- .title {
-   font-size: 24px;
-   margin: 0;
-   color: black;
-   text-decoration: none;
- }
+a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+}
 
- .links {
-   display: flex;
-   align-items: center;
- }
+.title {
+  font-size: 24px;
+  margin: 0;
+  color: black;
+  text-decoration: none;
+}
 
- .links a {
-   margin-left: 10px;
-   text-decoration: none;
-   color: #000;
- }
+.links {
+  display: flex;
+  align-items: center;
+}
 
- .flash-message {
-   margin: 10px 0;
-   padding: 5px;
-   border-radius: 5px;
-   color: white;
- }
+.links a {
+  margin-left: 10px;
+  text-decoration: none;
+  color: black;
+}
 
- .flash-message.success {
-   background-color: #28a745;
-   border: 1px solid #218838;
- }
+#feedback-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 10px;
+  width: 90vw;
+}
 
- .flash-message.error {
-   background-color: #dc3545;
-   border: 1px solid #c82333;
- }
+.feedback:hover {
+  cursor: pointer;
+  background-color: #a3a6a7;
+}
+
+.feedback {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: black;
+}
+
+.feedback a {
+  text-decoration: none;
+}
+
+.flash-message {
+  margin: 10px 0;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+}
+
+.flash-message.success {
+  background-color: #28a745;
+  border: 1px solid #218838;
+}
+
+.flash-message.error {
+  background-color: #dc3545;
+  border: 1px solid #c82333;
+}

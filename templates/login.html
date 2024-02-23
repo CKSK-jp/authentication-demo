@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block header %}
 <div class="links">
@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block content %}
-<h1>Login</h1>
 
 <form for="login-user" method="POST">
+  <h1>{{ title }}</h1>
   {{ form.hidden_tag() }}
 
   {% for field in form if field.widget.input_type != 'hidden' %}

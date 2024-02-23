@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block header %}
+<div class="links">
+  <a href="/logout">Logout</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Feedback</h1>
+
+{% for feedback in feedbacks %}
+<div class="feedback">
+  <h3>{{ feedback.title }}</h3>
+  <p>{{ feedback.content }}</p>
+</div>
+{% endfor %}
+<button class="btn btn-secondary">Edit</button>
+{% endblock %}

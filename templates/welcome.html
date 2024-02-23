@@ -1,6 +1,6 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
-{% block title %}Welcome {{ user.username}}{% endblock %}
+{% block title %}{{title}} {{ user.username}}{% endblock %}
 
 {% block header %}
 <div class="links">
@@ -9,8 +9,34 @@
 {% endblock %}
 
 {% block content %}
-<h1>Welcome {{ user.username}}</h1>
-<p>This is the welcome page!</p>
+<div class="main">
+  <h1>{{title}} {{ user.username}}</h1>
+  <p>This is the welcome page!</p>
 
-<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita soluta debitis aliquam blanditiis, asperiores placeat obcaecati consectetur explicabo quas quo totam alias similique molestiae dicta id amet eius molestias reprehenderit!</p>
+  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita soluta debitis aliquam blanditiis, asperiores
+    placeat obcaecati consectetur explicabo quas quo totam alias similique molestiae dicta id amet eius molestias
+    reprehenderit!</p>
+
+  <h5>Like what you see? Give us feedback!</h5>
+
+  <a href="/users/{{ user.username }}/feedback/add" class="btn btn-secondary">Add Feedback</a>
+</div>
+
+<div id="feedback-container">
+  {% for feedback in feedback_list %}
+  <a class="feedback" href="/feedback/{{ feedback.id }}/update">
+    <h3>{{ feedback.title }}</h3>
+    <p>{{ feedback.content }}</p>
+  </a>
+  {% endfor %}
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<div class="flash-message {{ category }}">
+  {{ message }}
+</div>
+{% endfor %}
+{% endwith %}
+
 {% endblock %}
